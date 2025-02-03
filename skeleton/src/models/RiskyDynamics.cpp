@@ -29,7 +29,7 @@ double RiskyDynamics::sampleNextValue(double currentValue, double dt, double bro
     double volSquared = pnl_vect_scalar_prod(volatilityVector_, volatilityVector_);
     double sigma = std::sqrt(volSquared);
 
-    double driftTerm = drift_ - 0.5 * volSquared * dt;
+    double driftTerm = (drift_ - 0.5 * volSquared) * dt;
     double diffusionTerm = sigma * std::sqrt(dt) * brownian;
 
     return currentValue * std::exp(driftTerm + diffusionTerm);
@@ -37,7 +37,12 @@ double RiskyDynamics::sampleNextValue(double currentValue, double dt, double bro
 
 int RiskyDynamics::size() const
 {
-    return volatilityVector_->size();
+    return volatilityVector_->size;
+}
+
+double RiskyDynamics::getDrift() const
+{
+    return drift_;
 }
 
 
