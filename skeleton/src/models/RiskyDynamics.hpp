@@ -4,10 +4,33 @@
 
 #ifndef RISKYDYNAMICS_HPP
 #define RISKYDYNAMICS_HPP
-
+#include <pnl/pnl_matvect.h>
 
 
 class RiskyDynamics {
+private:
+    double drift_;
+    PnlVect* volatilityVector_;
+
+public:
+    RiskyDynamics(double drift, PnlVect* volatilityVector);
+
+    virtual ~RiskyDynamics();
+
+    /**
+     * @brief Sample the next value using the SDE
+     * @param currentValue Current asset/FX value
+     * @param dt Time step
+     * @param brownian Brownian increment
+     * @return Next value
+     */
+    double sampleNextValue(double currentValue, double dt, double brownian) const;
+
+    /**
+     * @brief Get the size of the volatility vector
+     */
+
+    int size() const;
 
 };
 
