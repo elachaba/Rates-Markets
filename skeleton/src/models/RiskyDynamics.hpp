@@ -4,7 +4,7 @@
 
 #ifndef RISKYDYNAMICS_HPP
 #define RISKYDYNAMICS_HPP
-#include <pnl/pnl_matvect.h>
+#include <pnl/pnl_vector.h>
 
 
 class RiskyDynamics {
@@ -31,6 +31,8 @@ public:
      */
 
     int size() const;
+
+    double getDrift() const;
 
 };
 
