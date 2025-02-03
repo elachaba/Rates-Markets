@@ -7,12 +7,13 @@
 /**
  * @brief Constructor for the Currency class.
  * @param drift The drift term in the stochastic differential equation.
- * @param volatilityVector The volatility vector for stochastic behavior.
+ * @param volatility The volatility for stochastic behavior.
  * @param foreignRate The foreign interest rate for the currency.
  * @param domesticRate The domestic interest rate for the currency.
  */
-Currency::Currency(double drift, PnlVect* volatilityVector, double foreignRate, double domesticRate)
-    : RiskyDynamics(drift, volatilityVector),
+Currency::Currency(double drift, double volatility, double foreignRate, double domesticRate)
+    : RiskyDynamics(drift, nullptr), // No longer passing a volatility vector
+      volatility_(volatility),
       foreignInterestRate_(foreignRate),
       domesticInterestRate_(domesticRate) {}
 
@@ -33,6 +34,14 @@ double Currency::getDomesticRate() const {
 }
 
 /**
+ * @brief Get the volatility of the currency.
+ * @return The volatility as a scalar.
+ */
+double Currency::getVolatility() const {
+    return volatility_;
+}
+
+/**
  * @brief Calculate the discount factor for the foreign interest rate.
  * @param t1 Start time.
  * @param t2 End time.
@@ -43,31 +52,4 @@ double Currency::discountForeign(double t1, double t2) const {
 }
 
 /**
- * @brief Calculate the discount factor for the domestic interest rate.
- * @param t1 Start time.
- * @param t2 End time.
- * @return Discount factor for the domestic rate.
- */
-double Currency::discountDomestic(double t1, double t2) const {
-    return domesticInterestRate_.discount(t1, t2);
-}
-
-/**
- * @brief Calculate the capitalization factor for the foreign interest rate.
- * @param t1 Start time.
- * @param t2 End time.
- * @return Capitalization factor for the foreign rate.
- */
-double Currency::accountForeign(double t1, double t2) const {
-    return foreignInterestRate_.account(t1, t2);
-}
-
-/**
- * @brief Calculate the capitalization factor for the domestic interest rate.
- * @param t1 Start time.
- * @param t2 End time.
- * @return Capitalization factor for the domestic rate.
- */
-double Currency::accountDomestic(double t1, double t2) const {
-    return domesticInterestRate_.account(t1, t2);
-}
+* @brief Calculate the discount facto
