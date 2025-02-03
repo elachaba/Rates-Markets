@@ -37,6 +37,7 @@ set(SOURCE_FILES
         src/financial/InterestRateModel.hpp
         src/utils/TimeGrid.cpp
         src/utils/TimeGrid.hpp
+        src/test.cpp
 )
 
 # Create library
@@ -46,6 +47,10 @@ target_link_libraries(fx_hedging ${PNL_LIBRARIES} nlohmann_json::nlohmann_json)
 # Create test executable
 add_executable(test_json_reader src/tests/test_json_reader.cpp)
 target_link_libraries(test_json_reader fx_hedging)
+
+add_executable(test src/test.cpp)
+target_link_libraries(test fx_hedging)
+
 
 if(${CMAKE_BUILD_TYPE} STREQUAL "Release")
     add_definitions(-DPNL_RANGE_CHECK_OFF)
