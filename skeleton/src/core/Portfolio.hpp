@@ -2,21 +2,8 @@
 
 #include <list>
 #include "MonteCarlo.hpp"
-#include "TimeGrid.hpp"
-
-class Position {
-public:
-    int date;
-    PnlVect *deltas;
-    PnlVect *deltasStdDev;
-    double price;
-    double priceStdDev;
-    double portfolioValue;
-
-    Position(int date, double price, double priceStdDev, PnlVect* deltas, PnlVect* deltasStdDev, double portfolioValue);
-    friend void to_json(nlohmann::json &j, const Position &positions);
-    void print() const;
-};
+#include "utils/TimeGrid.hpp"
+#include "Position.hpp"
 
 class Portfolio {
 public:
