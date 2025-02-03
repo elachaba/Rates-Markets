@@ -60,8 +60,10 @@ target_link_libraries(test_interest_rate fx_hedging)
 add_executable(test_risky_dynamics src/tests/test_risky_dynamics.cpp src/models/RiskyDynamics.cpp)
 target_link_libraries(test_risky_dynamics fx_hedging)
 
-
+add_executable(test_position src/tests/test_position.cpp src/core/Position.cpp)
+target_link_libraries(test_position fx_hedging)
 
 if(${CMAKE_BUILD_TYPE} STREQUAL "Release")
     add_definitions(-DPNL_RANGE_CHECK_OFF)
 endif()
+
