@@ -54,7 +54,10 @@ target_link_libraries(test fx_hedging)
 add_executable(test_timegrid src/tests/test_timegrid.cpp src/utils/TimeGrid.cpp)
 target_link_libraries(test_timegrid fx_hedging)
 
-add_executable(test_interest_rate src/tests/test_interest_rate_model.cpp src/financial/InterestRateModel.cpp)
+add_executable(test_interest_rate src/tests/test_interest_rate_model.cpp src/financial/InterestRateModel.cpp
+        src/tests/test_currency.cpp
+        src/tests/test_riskyasset.cpp
+)
 target_link_libraries(test_interest_rate fx_hedging)
 
 add_executable(test_risky_dynamics src/tests/test_risky_dynamics.cpp src/models/RiskyDynamics.cpp)
@@ -67,3 +70,8 @@ if(${CMAKE_BUILD_TYPE} STREQUAL "Release")
     add_definitions(-DPNL_RANGE_CHECK_OFF)
 endif()
 
+add_executable(test_currency src/tests/test_currency.cpp src/models/Currency.cpp)
+target_link_libraries(test_currency fx_hedging)
+
+add_executable(test_riskyasset src/tests/test_riskyasset.cpp src/models/RiskyDynamics.cpp)
+target_link_libraries(test_riskyasset fx_hedging)
