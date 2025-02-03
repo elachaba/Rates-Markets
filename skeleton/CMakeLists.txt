@@ -29,7 +29,6 @@ set(SOURCE_FILES
         src/models/RiskyDynamics.hpp
         src/models/Currency.cpp
         src/models/Currency.hpp
-        src/financial/Option.cpp
         src/financial/Option.hpp
         src/financial/RiskyAsset.cpp
         src/financial/RiskyAsset.hpp
