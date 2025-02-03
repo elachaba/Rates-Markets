@@ -45,11 +45,15 @@ add_library(fx_hedging STATIC ${SOURCE_FILES})
 target_link_libraries(fx_hedging ${PNL_LIBRARIES} nlohmann_json::nlohmann_json)
 
 # Create test executable
-add_executable(test_json_reader src/tests/test_json_reader.cpp)
+add_executable(test_json_reader src/tests/test_json_reader.cpp
+        src/tests/test_timegrid.cpp)
 target_link_libraries(test_json_reader fx_hedging)
 
 add_executable(test src/test.cpp)
 target_link_libraries(test fx_hedging)
+
+add_executable(test_timegrid src/tests/test_timegrid.cpp src/utils/TimeGrid.cpp)
+target_link_libraries(test_timegrid fx_hedging)
 
 
 if(${CMAKE_BUILD_TYPE} STREQUAL "Release")
