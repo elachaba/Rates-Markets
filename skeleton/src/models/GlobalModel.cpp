@@ -30,7 +30,7 @@ GlobalModel::~GlobalModel()
 
 }
 
-int GlobalModel::getTotalNumberOfAssets()
+int GlobalModel::getTotalNumberOfAssets() const
 {
     return riskyAssets_.size() + currencies_.size();
 }

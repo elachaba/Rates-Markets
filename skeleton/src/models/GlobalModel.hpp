@@ -6,7 +6,6 @@
 #define GLOBALMODEL_HPP
 
 #include <vector>
-#include "nlohmann/json.hpp"
 #include <pnl/pnl_random.h>
 #include <pnl/pnl_matrix.h>
 #include "Currency.hpp"
@@ -31,10 +30,15 @@ public:
 
     virtual ~GlobalModel();
 
+    // TODO added them for testing
+    const std::vector<RiskyAsset*>& getRiskyAssets() const { return riskyAssets_; }
+    const std::vector<Currency*>& getCurrencies() const { return currencies_; }
+    const ITimeGrid* getTimeGrid() const { return monitoringTimeGrid_; }
+
     /**
      * @brief Return the total number of risky assets
      */
-    int getTotalNumberOfAssets();
+    int getTotalNumberOfAssets() const;
 
     /**
      * @brief Simulate assets' paths
