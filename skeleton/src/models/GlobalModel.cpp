@@ -3,11 +3,18 @@
 //
 
 #include "GlobalModel.hpp"
-#include <stdexcept>
+#include "utils/json_reader.hpp"
 
-GlobalModel::GlobalModel(const nlohmann::json& jsonParams)
+
+GlobalModel::GlobalModel(std::vector<RiskyAsset*> assets,
+           std::vector<Currency*> currencies,
+           TimeGrid* timeGrid,
+           double domesticRate) :
+    currencies_(std::move(currencies))
+    , riskyAssets_(std::move(assets))
+    , monitoringTimeGrid_(timeGrid)
+    , domesticInterestRate_(new InterestRateModel(domesticRate))
 {
-    initFromJson(jsonParams);
 }
 
 GlobalModel::~GlobalModel()
@@ -20,7 +27,7 @@ GlobalModel::~GlobalModel()
 
     delete monitoringTimeGrid_;
     delete domesticInterestRate_;
-    pnl_mat_free(&correlationMatrix_);
+
 }
 
 

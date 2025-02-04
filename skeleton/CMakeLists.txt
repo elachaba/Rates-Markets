@@ -37,6 +37,8 @@ set(SOURCE_FILES
         src/utils/TimeGrid.cpp
         src/utils/TimeGrid.hpp
         src/test.cpp
+        src/utils/GlobalModelBuilder.cpp
+        src/utils/GlobalModelBuilder.hpp
 )
 
 # Create library
