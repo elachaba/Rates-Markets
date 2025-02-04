@@ -8,6 +8,7 @@
 #include <vector>
 #include "nlohmann/json.hpp"
 #include <pnl/pnl_random.h>
+#include <pnl/pnl_matrix.h>
 #include "Currency.hpp"
 #include "utils/TimeGrid.hpp"
 #include "financial/InterestRateModel.hpp"
@@ -21,10 +22,12 @@ private:
     std::vector<RiskyAsset*> riskyAssets_;
     ITimeGrid* monitoringTimeGrid_;
     InterestRateModel* domesticInterestRate_;
-    PnlMat* correlationMatrix_;
 
 public:
-    GlobalModel(const nlohmann::json& jsonParams);
+    GlobalModel(std::vector<RiskyAsset*> assets,
+           std::vector<Currency*> currencies,
+           TimeGrid* timeGrid,
+           double domesticRate);
 
     virtual ~GlobalModel();
 
@@ -47,11 +50,6 @@ public:
      */
     void shiftAsset(double t, PnlMat* path, const PnlMat* past, double h, PnlRng* rng);
 
-    /**
-     * @brief Initialize the model from JSON parameters
-     */
-
-    void initFromJson(const nlohmann::json& jsonParams);
 };
 
 #endif //GLOBALMODEL_HPP
