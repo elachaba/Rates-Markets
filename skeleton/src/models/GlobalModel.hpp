@@ -32,6 +32,11 @@ public:
     virtual ~GlobalModel();
 
     /**
+     * @brief Return the total number of risky assets
+     */
+    int getTotalNumberOfAssets();
+
+    /**
      * @brief Simulate assets' paths
      * @param t Current time
      * @param path Matrix to store simulated paths
