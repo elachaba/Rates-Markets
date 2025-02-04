@@ -23,6 +23,16 @@ private:
     ITimeGrid* monitoringTimeGrid_;
     InterestRateModel* domesticInterestRate_;
 
+    /**
+     * @brief Fill the path matrix at a specific index with simulated values
+     * @param indexToFill Index in the path matrix to populate
+     * @param dt Time step for simulation
+     * @param path Matrix to store the simulated path
+     * @param past Matrix containing historical data
+     * @param rng Random number generator
+     */
+    void fill(int indexToFill, double dt, PnlMat* path, const PnlMat* past, PnlRng* rng);
+
 public:
     GlobalModel(std::vector<RiskyAsset*> assets,
            std::vector<Currency*> currencies,

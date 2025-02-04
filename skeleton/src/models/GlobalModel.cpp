@@ -38,20 +38,25 @@ int GlobalModel::getTotalNumberOfAssets()
 
 void GlobalModel::simulate(int t, PnlMat* path, const PnlMat* past, PnlRng* rng)
 {
-    int i = 0;
+    int indexToFill = 0;
     int monitoringLength = monitoringTimeGrid_->len();
-    int nbUnderlying = currencies_.size() + riskyAssets_.size(); // to be changed
-    while (i < monitoringLength && monitoringTimeGrid_->at(i) <= t) {
+    int nbUnderlying = getTotalNumberOfAssets(); // to be changed
+    while (indexToFill < monitoringLength && monitoringTimeGrid_->at(indexToFill) <= t) {
         for (int j = 0; j < nbUnderlying; j++) {
-            MLET(path, i, j) = MGET(past, i, j);
+            MLET(path, indexToFill, j) = MGET(past, indexToFill, j);
         }
-        i++;
+        indexToFill++;
     }
 
-    bool needIntermediateStep = false;
+    if (indexToFill != past->m) {   //in case t isn't a monitoring date
+        int dt = monitoringTimeGrid_->at(indexToFill) - t;
+        fill(indexToFill, dt, path, past, rng);
+        indexToFill ++;
+    }
 
-    for (int i = 0; i < nbUnderlying; i++) {
-
+    for (int i = indexToFill; i < monitoringLength; i++) {
+        int dt = monitoringTimeGrid_->at(i) - monitoringTimeGrid_->at(i-1);
+        fill(indexToFill, dt, path, past, rng);
     }
 
 
@@ -61,4 +66,18 @@ void GlobalModel::simulate(int t, PnlMat* path, const PnlMat* past, PnlRng* rng)
 void GlobalModel::shiftAsset(int t, PnlMat* path, const PnlMat* past, double h, PnlRng* rng)
 {
     // Stub method for shifted path
+}
+
+
+
+void GlobalModel::fill(int indexToFill, double dt, PnlMat* path, const PnlMat* past, PnlRng* rng) {
+    for (int i = 0; i < getTotalNumberOfAssets(); i++) {
+
+        double newValue;
+        if (i < riskyAssets_.size()) {
+            newValue = riskyAssets_.at(i)
+        }
+
+
+    }
 }
