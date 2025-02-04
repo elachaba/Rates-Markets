@@ -72,6 +72,17 @@ public:
      * @return true if the date exists, false otherwise.
      */
     bool has(int nDays) const override;
+
+    /**
+     * @brief Finds the largest date in the grid that is <= t, and returns its index.
+     * @param t A real number representing the target time.
+     * @return The index of the largest date <= t.
+     * @throw std::runtime_error If no date in the grid is <= t.
+     */
+    int indexLowerOrEqual(double t) const;
+
 };
+
+
 
 #endif // TIMEGRID_HPP

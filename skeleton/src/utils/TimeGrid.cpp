@@ -57,3 +57,28 @@ int TimeGrid::len() const {
 bool TimeGrid::has(int nDays) const {
     return std::binary_search(dates_.begin(), dates_.end(), nDays);
 }
+
+int TimeGrid::indexLowerOrEqual(double t) const
+{
+    if (dates_.empty()) {
+        throw std::runtime_error("TimeGrid is empty: no dates available.");
+    }
+
+    // Convert t to an integer threshold. If you want to handle fractional t differently,
+    // you can use std::floor, std::ceil, or a direct cast.
+    // This example uses floor, so if t=7.9, we look for the largest date <= 7.
+    int target = static_cast<int>(std::floor(t));
+
+    // We want the largest element in dates_ that is <= target.
+    // upper_bound returns an iterator to the first element greater than 'target'.
+    auto it = std::upper_bound(dates_.begin(), dates_.end(), target);
+
+    if (it == dates_.begin()) {
+        // Means all dates are > target -> none are <= t
+        throw std::runtime_error("No date in the grid is <= the given time.");
+    }
+
+    // Otherwise, the largest date <= target is at 'it - 1'
+    int index = static_cast<int>(it - dates_.begin()) - 1;
+    return index;
+}

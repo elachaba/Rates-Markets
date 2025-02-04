@@ -57,8 +57,3 @@ void GlobalModel::shiftAsset(int t, PnlMat* path, const PnlMat* past, double h, 
 {
     // Stub method for shifted path
 }
-
-void GlobalModel::initFromJson(const nlohmann::json& jsonParams)
-{
-    // Stub method for initializing from JSON
-}
