@@ -11,6 +11,9 @@ endif ()
 find_package(Pnl REQUIRED)
 find_package(nlohmann_json REQUIRED)
 
+# Use gtest
+find_package(GTest REQUIRED)
+
 # Include directories
 include_directories(${PROJECT_SOURCE_DIR}/src)
 include_directories(${PNL_INCLUDE_DIRS})
@@ -76,3 +79,11 @@ target_link_libraries(test_currency fx_hedging)
 
 add_executable(test_riskyasset src/tests/test_riskyasset.cpp src/models/RiskyDynamics.cpp)
 target_link_libraries(test_riskyasset fx_hedging)
+
+add_executable(test_global_model_init
+        src/tests/test_global_model_init.cpp
+        src/models/GlobalModel.cpp src/utils/GlobalModelBuilder.cpp src/models/Currency.cpp src/models/RiskyDynamics.cpp
+        src/utils/TimeGrid.cpp
+        src/financial/RiskyAsset.cpp src/financial/InterestRateModel.cpp
+)
+target_link_libraries(test_global_model_init fx_hedging)
