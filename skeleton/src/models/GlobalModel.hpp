@@ -35,7 +35,7 @@ public:
      * @param past Matrix of historic prices
      * @param rng Random number generator
      */
-    void simulate(double t, PnlMat* path, const PnlMat* past, PnlRng* rng);
+    void simulate(int t, PnlMat* path, const PnlMat* past, PnlRng* rng);
 
     /**
      * @brief Simulated with shifted asset
@@ -45,7 +45,7 @@ public:
      * @param h Size of the shift
      * @rng Random number generator
      */
-    void shiftAsset(double t, PnlMat* path, const PnlMat* past, double h, PnlRng* rng);
+    void shiftAsset(int t, PnlMat* path, const PnlMat* past, double h, PnlRng* rng);
 
     /**
      * @brief Initialize the model from JSON parameters
