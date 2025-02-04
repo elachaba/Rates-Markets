@@ -10,9 +10,10 @@
  * @param volatilityVector The volatility vector for stochastic behavior.
  * @param domesticRate The domestic interest rate for the asset.
  */
-RiskyAsset::RiskyAsset(double drift, PnlVect* volatilityVector, double domesticRate)
+RiskyAsset::RiskyAsset(std::string currencyId, double drift, PnlVect* volatilityVector, double domesticRate)
     : RiskyDynamics(drift, volatilityVector),
-      domesticInterestRate_(domesticRate) {}
+        domesticInterestRate_(domesticRate),
+        currencyId(currencyId) {}
 
 /**
  * @brief Get the domestic interest rate.

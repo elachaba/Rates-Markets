@@ -5,6 +5,8 @@
 #ifndef RISKYASSET_HPP
 #define RISKYASSET_HPP
 
+#include <string>
+
 #include "models/RiskyDynamics.hpp"
 #include "InterestRateModel.hpp"
 
@@ -13,6 +15,7 @@
  */
 class RiskyAsset : public RiskyDynamics {
 private:
+    std::string currencyId;
     InterestRateModel domesticInterestRate_; ///< Domestic interest rate model for the asset.
 
 public:
@@ -22,7 +25,9 @@ public:
      * @param volatilityVector The volatility vector for stochastic behavior.
      * @param domesticRate The domestic interest rate for the asset.
      */
-    RiskyAsset(double drift, PnlVect* volatilityVector, double domesticRate);
+    RiskyAsset(std::string currencyId, double drift, PnlVect* volatilityVector, double domesticRate);
+
+    std::string getCurrencyId() const { return currencyId; };
 
     /**
      * @brief Destructor.
