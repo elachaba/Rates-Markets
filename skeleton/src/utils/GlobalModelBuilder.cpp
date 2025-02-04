@@ -65,6 +65,7 @@ std::vector<RiskyAsset*> GlobalModelBuilder::createRiskyAssets(
     auto jsonAssets = params.at("Assets");
 
     for (const auto& jsonAsset : jsonAssets) {
+        std::string currencyId = jsonAsset.at("CurrencyId").get<std::string>();
         double drift = jsonAsset.at("Drift").get<double>();
         double volatility = jsonAsset.at("Volatility").get<double>();
 
@@ -77,7 +78,7 @@ std::vector<RiskyAsset*> GlobalModelBuilder::createRiskyAssets(
         pnl_mat_get_row(volatilityVector, choleskyMatrix, currentIndex++);
         pnl_vect_mult_scalar(volatilityVector, volatility);
 
-        assets.push_back(new RiskyAsset(drift, volatilityVector, domesticRate));
+        assets.push_back(new RiskyAsset(currencyId, drift, volatilityVector, domesticRate));
         pnl_vect_free(&volatilityVector);
     }
 
@@ -116,8 +117,6 @@ std::vector<Currency*> GlobalModelBuilder::createCurrencies(
 }
 
 TimeGrid* GlobalModelBuilder::createTimeGrid(const nlohmann::json& params) {
-    int maturityInDays = params.at("Option").at("MaturityInDays").get<int>();
-    int daysPerYear = params.at("NumberOfDaysInOneYear").get<int>();
-    double maturity = maturityInDays / static_cast<double>(daysPerYear);
-    return new TimeGrid(maturity);
+    nlohmann::json timeGridJson = params.at("Option").at("FixingDatesInDays").at("DatesInDays");
+    return new TimeGrid(timeGridJson);
 }

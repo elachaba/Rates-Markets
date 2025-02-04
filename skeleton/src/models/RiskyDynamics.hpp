@@ -34,6 +34,9 @@ public:
 
     double getDrift() const;
 
+    // TODO: remove (for testing purposes)
+    PnlVect* getVolatility() const { return volatilityVector_; }
+
 };
 
 
