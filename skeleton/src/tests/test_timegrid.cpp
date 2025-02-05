@@ -6,12 +6,12 @@
 #include <iostream>
 #include <cassert>
 #include <nlohmann/json.hpp>
-#include "utils/TimeGrid.hpp"
+#include "utils/GridTimeGrid.hpp"
 
 void test_timegrid() {
     // Test 1: Construct TimeGrid with valid JSON
     nlohmann::json jsonData = {1, 5, 10, 20};
-    TimeGrid grid(jsonData);
+    GridTimeGrid grid(jsonData);
 
     // Test length function
     assert(grid.len() == 4);
@@ -42,7 +42,7 @@ void test_timegrid() {
     // Test constructor with invalid JSON (not an array)
     try {
         nlohmann::json invalidJson = {{"invalid", 123}};
-        TimeGrid badGrid(invalidJson);
+        GridTimeGrid badGrid(invalidJson);
         std::cerr << "Test failed: Invalid JSON should throw an exception." << std::endl;
         assert(false);
     } catch (const std::invalid_argument&) {
