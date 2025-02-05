@@ -32,7 +32,7 @@ set(SOURCE_FILES
         src/models/RiskyDynamics.hpp
         src/models/Currency.cpp
         src/models/Currency.hpp
-        src/financial/Option.hpp
+        src/options/Option.hpp
         src/financial/RiskyAsset.cpp
         src/financial/RiskyAsset.hpp
         src/financial/InterestRateModel.cpp
@@ -44,6 +44,10 @@ set(SOURCE_FILES
         src/utils/ITimeGrid.hpp
         src/utils/FixedTimeGrid.cpp
         src/utils/FixedTimeGrid.hpp
+        src/options/CallQuanto.cpp
+        src/options/CallQuanto.hpp
+        src/options/CallCurrency.cpp
+        src/options/CallCurrency.hpp
 )
 
 # Create library
