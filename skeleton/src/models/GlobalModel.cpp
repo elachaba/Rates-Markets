@@ -94,5 +94,6 @@ void GlobalModel::fill(int indexToFill, double dt, PnlMat* path, const PnlVect* 
         } else {
             newValue = currencies_.at(i-riskyAssets_.size())->sampleNextValue(GET(pastVals, i), dt, gaussianVect);
         }
+        MLET(path, indexToFill, i) = newValue;
     }
 }
