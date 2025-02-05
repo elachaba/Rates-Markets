@@ -11,7 +11,7 @@ private:
     GlobalModel model;     // Model containing market data, parameters, etc.
     int numberSimulations;  // Number of simulations
     double eps;             // Shifting term
-    void priceT(int t, PnlMat* past, PnlRng* rng, double& price, double& confidence_interval); // Method to compute the price
+    void priceT(int t, PnlMat* past, PnlRng* rng, double& price, double& priceStd); // Method to compute the price
     void deltaT(int t, PnlMat* past, PnlRng* rng, PnlVect* deltas, PnlVect* deltas_std); // Method to compute the Delta
 
 public:
@@ -19,7 +19,9 @@ public:
     MonteCarlo(Option* option, const GlobalModel& model, int numberSimulations, double eps);
 
     // Method to compute the price and deltas
-    void priceAndDelta(int t, PnlMat* past, PnlRng* rng, double& price, double& confidence_interval, PnlVect* deltas, PnlVect* deltasStd);
+    void priceAndDelta(int t, PnlMat* past, PnlRng* rng, double& price, double& priceStd, PnlVect* deltas, PnlVect* deltasStd);
+    [[nodiscard]] int getNumberUnderlying() const {return model.getTotalNumberOfAssets(); };
+    [[nodiscard]] ITimeGrid* getMonitoringGrid() const {return option->getMonitoringGrid();}
 };
 
 #endif // MONTECARLO_HPP

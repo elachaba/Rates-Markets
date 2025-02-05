@@ -9,16 +9,16 @@ MonteCarlo::MonteCarlo(Option* option, const GlobalModel& model, int numberSimul
 }
 
 // Stub for priceAndDelta()
-void MonteCarlo::priceAndDelta(int t, PnlMat* past, PnlRng* rng, double& price, double& confidence_interval, PnlVect* deltas, PnlVect* deltasStd)
+void MonteCarlo::priceAndDelta(int t, PnlMat* past, PnlRng* rng, double& price, double& priceStd, PnlVect* deltas, PnlVect* deltasStd)
 {
     // TODO: implement pricing and delta computations here
-    priceT(t, past, rng, price, confidence_interval);
+    priceT(t, past, rng, price, priceStd);
     deltaT(t, past, rng, deltas, deltasStd);
 
 }
 
 
-void MonteCarlo::priceT(int t, PnlMat* past, PnlRng* rng, double& price, double& confidence_interval) {
+void MonteCarlo::priceT(int t, PnlMat* past, PnlRng* rng, double& price, double& priceStd) {
 
 
     double sum = 0.0;
@@ -39,7 +39,7 @@ void MonteCarlo::priceT(int t, PnlMat* past, PnlRng* rng, double& price, double&
 
     price = sum / numberSimulations;
     double variance = squared_sum / numberSimulations - price * price;
-    confidence_interval = 1.96 * sqrt(variance / numberSimulations);
+    priceStd = 1.96 * sqrt(variance / numberSimulations);
     pnl_mat_free(&path);
 
 }
