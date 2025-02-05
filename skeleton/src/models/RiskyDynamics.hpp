@@ -21,10 +21,10 @@ public:
      * @brief Sample the next value using the SDE
      * @param currentValue Current asset/FX value
      * @param dt Time step
-     * @param brownian Brownian increment
+     * @param gaussianVect Gaussian vector
      * @return Next value
      */
-    double sampleNextValue(double currentValue, double dt, double brownian) const;
+    double sampleNextValue(double currentValue, double dt, PnlVect* gaussianVect) const;
 
     /**
      * @brief Get the size of the volatility vector

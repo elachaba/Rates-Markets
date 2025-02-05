@@ -21,16 +21,15 @@ RiskyDynamics::~RiskyDynamics()
     pnl_vect_free(&volatilityVector_);
 }
 
-double RiskyDynamics::sampleNextValue(double currentValue, double dt, double brownian) const
+double RiskyDynamics::sampleNextValue(double currentValue, double dt, PnlVect* gaussianVect) const
 {
     // Implementation of the log-normal dynamics:
-    // S(t+dt) = S(t) * exp((drift - 0.5*σ²)dt + σ*√dt*dW)
+    // S(t+dt) = S(t) * exp((drift - 0.5*σ²)dt + σ*dW)
 
     double volSquared = pnl_vect_scalar_prod(volatilityVector_, volatilityVector_);
-    double sigma = std::sqrt(volSquared);
 
     double driftTerm = (drift_ - 0.5 * volSquared) * dt;
-    double diffusionTerm = sigma * std::sqrt(dt) * brownian;
+    double diffusionTerm = std::sqrt(dt) * pnl_vect_scalar_prod(volatilityVector_, gaussianVect);
 
     return currentValue * std::exp(driftTerm + diffusionTerm);
 }
