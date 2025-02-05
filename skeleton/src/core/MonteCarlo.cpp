@@ -8,17 +8,17 @@ MonteCarlo::MonteCarlo(Option* option, const GlobalModel& model, int numberSimul
     // Empty constructor body
 }
 
-// Stub for priceAndDelta() — no actual logic yet
-void MonteCarlo::priceAndDelta(int t, PnlMat* past, PnlRng* rng, double& price, double& confidence_interval, double& delta, double& delta_price)
+// Stub for priceAndDelta()
+void MonteCarlo::priceAndDelta(int t, PnlMat* past, PnlRng* rng, double& price, double& confidence_interval, PnlVect* deltas, PnlVect* deltasStd)
 {
     // TODO: implement pricing and delta computations here
-    price(t, past, rng, price, confidence_interval);
-    delta(t, past, rng, delta, delta_price);
+    priceT(t, past, rng, price, confidence_interval);
+    deltaT(t, past, rng, deltas, deltasStd);
 
 }
 
 
-void MonteCarlo::price(int t, PnlMat* past, PnlRng* rng, double& price, double& confidence_interval) {
+void MonteCarlo::priceT(int t, PnlMat* past, PnlRng* rng, double& price, double& confidence_interval) {
 
 
     double sum = 0.0;
@@ -45,7 +45,7 @@ void MonteCarlo::price(int t, PnlMat* past, PnlRng* rng, double& price, double& 
 }
 
 
-void MonteCarlo::Delta(int t, PnlMat* past, PnlRng* rng, PnlVect* deltas, PnlVect* deltas_std) {
+void MonteCarlo::deltaT(int t, PnlMat* past, PnlRng* rng, PnlVect* deltas, PnlVect* deltasStd) {
 
     double diff;
     int nbUnderlying = model.getTotalNumberOfAssets();
@@ -75,7 +75,7 @@ void MonteCarlo::Delta(int t, PnlMat* past, PnlRng* rng, PnlVect* deltas, PnlVec
         double mean = GET(deltas, d) / (2.0 * numberSimulations * eps);
         double variance = GET(squared_sums, d) / (4.0 * eps * eps * numberSimulations) - mean * mean;
         LET(deltas, d) = mean / s_t;
-        LET(deltas_std, d) = sqrt(variance) / (s_t * sqrt(numberSimulations));
+        LET(deltasStd, d) = sqrt(variance) / (s_t * sqrt(numberSimulations));
     }
 
     pnl_mat_free(&shiftedUp);
