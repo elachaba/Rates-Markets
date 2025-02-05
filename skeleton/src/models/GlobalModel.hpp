@@ -40,10 +40,13 @@ public:
 
     virtual ~GlobalModel();
 
-    // TODO added them for testing
-    const std::vector<RiskyAsset*>& getRiskyAssets() const { return riskyAssets_; }
-    const std::vector<Currency*>& getCurrencies() const { return currencies_; }
-    const ITimeGrid* getTimeGrid() const { return monitoringTimeGrid_; }
+    // added them for testing
+    [[nodiscard]] const std::vector<RiskyAsset*>& getRiskyAssets() const { return riskyAssets_; }
+    [[nodiscard]] const std::vector<Currency*>& getCurrencies() const { return currencies_; }
+    [[nodiscard]] const ITimeGrid* getTimeGrid() const { return monitoringTimeGrid_; }
+    [[nodiscard]] const InterestRateModel* getInterestRateModel() const { return domesticInterestRate_; }
+    [[nodiscard]] int getMaturity() const {return monitoringTimeGrid_->at(monitoringTimeGrid_->len()-1); }
+
 
     /**
      * @brief Return the total number of risky assets
@@ -68,6 +71,8 @@ public:
      * @param shiftedPath Shifted path to be filled
      */
     void shiftAsset(int t, PnlMat* path, int asset, double h, PnlMat* shiftedPath);
+
+
 
 };
 
