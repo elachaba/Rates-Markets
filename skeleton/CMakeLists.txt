@@ -48,6 +48,12 @@ set(SOURCE_FILES
         src/options/CallQuanto.hpp
         src/options/CallCurrency.cpp
         src/options/CallCurrency.hpp
+        src/options/QuantoExchange.cpp
+        src/options/QuantoExchange.hpp
+        src/options/ForeignAsianOption.cpp
+        src/options/ForeignAsianOption.hpp
+        src/options/ForeignPerfBasket.cpp
+        src/options/ForeignPerfBasket.hpp
 )
 
 # Create library
