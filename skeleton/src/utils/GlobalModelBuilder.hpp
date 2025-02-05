@@ -29,7 +29,7 @@ private:
                                                  double domesticRate,
                                                  int& currentIndex);
 
-    static TimeGrid* createTimeGrid(const nlohmann::json& params);
+    static GridTimeGrid* createTimeGrid(const nlohmann::json& params);
 };
 
 

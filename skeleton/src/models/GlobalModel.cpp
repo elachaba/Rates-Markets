@@ -8,7 +8,7 @@
 
 GlobalModel::GlobalModel(std::vector<RiskyAsset*> assets,
            std::vector<Currency*> currencies,
-           TimeGrid* timeGrid,
+           ITimeGrid* timeGrid,
            double domesticRate) :
     currencies_(std::move(currencies))
     , riskyAssets_(std::move(assets))

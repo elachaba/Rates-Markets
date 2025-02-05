@@ -9,7 +9,7 @@
 #include <pnl/pnl_random.h>
 #include <pnl/pnl_matrix.h>
 #include "Currency.hpp"
-#include "utils/TimeGrid.hpp"
+#include "utils/ITimeGrid.hpp"
 #include "financial/InterestRateModel.hpp"
 #include "financial/RiskyAsset.hpp"
 
@@ -35,7 +35,7 @@ private:
 public:
     GlobalModel(std::vector<RiskyAsset*> assets,
            std::vector<Currency*> currencies,
-           TimeGrid* timeGrid,
+           ITimeGrid* timeGrid,
            double domesticRate);
 
     virtual ~GlobalModel();

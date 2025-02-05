@@ -5,6 +5,10 @@
 #include "GlobalModelBuilder.hpp"
 #include "json_reader.hpp"
 #include <stdexcept>
+#include <vector>
+
+#include "FixedTimeGrid.hpp"
+#include "GridTimeGrid.hpp"
 
 GlobalModel* GlobalModelBuilder::createFromJson(const nlohmann::json& params) {
     int currentIndex = 0;
@@ -20,7 +24,7 @@ GlobalModel* GlobalModelBuilder::createFromJson(const nlohmann::json& params) {
     auto currencies = createCurrencies(params, choleskyMatrix, domesticCurrencyId, domesticRate, currentIndex);
 
     // Create time grid
-    TimeGrid* timeGrid = createTimeGrid(params);
+    ITimeGrid* timeGrid = createTimeGrid(params);
 
     // Clean up
     pnl_mat_free(&choleskyMatrix);
@@ -116,7 +120,25 @@ std::vector<Currency*> GlobalModelBuilder::createCurrencies(
     return currencies;
 }
 
-TimeGrid* GlobalModelBuilder::createTimeGrid(const nlohmann::json& params) {
-    nlohmann::json timeGridJson = params.at("Option").at("FixingDatesInDays").at("DatesInDays");
-    return new TimeGrid(timeGridJson);
+ITimeGrid* GlobalModelBuilder::createTimeGrid(const nlohmann::json& params) {
+    nlohmann::json timeGridJson = params.at("Option").at("FixingDatesInDays");
+
+    std::string gridType = timeGridJson.at("Type").get<std::string>();
+
+    if (gridType == "Grid")
+    {
+        std::vector<int> dates = timeGridJson.at("DatesInDays").get<std::vector<int>>();
+        return new GridTimeGrid(dates);
+    }
+
+    if (gridType == "Fixed")
+    {
+        int period = timeGridJson.at("Period").get<int>();
+        int maturity = timeGridJson.at("MaturityInDays").get<int>();
+
+        return new FixedTimeGrid(maturity, period);
+    }
+
+    throw std::runtime_error("GlobalModelBuilder: Invalid grid type");
+
 }

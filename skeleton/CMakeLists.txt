@@ -37,11 +37,13 @@ set(SOURCE_FILES
         src/financial/RiskyAsset.hpp
         src/financial/InterestRateModel.cpp
         src/financial/InterestRateModel.hpp
-        src/utils/TimeGrid.cpp
-        src/utils/TimeGrid.hpp
-        src/test.cpp
+        src/utils/GridTimeGrid.cpp
+        src/utils/GridTimeGrid.hpp
         src/utils/GlobalModelBuilder.cpp
         src/utils/GlobalModelBuilder.hpp
+        src/utils/ITimeGrid.hpp
+        src/utils/FixedTimeGrid.cpp
+        src/utils/FixedTimeGrid.hpp
 )
 
 # Create library
@@ -52,10 +54,8 @@ target_link_libraries(fx_hedging ${PNL_LIBRARIES} nlohmann_json::nlohmann_json)
 add_executable(test_json_reader src/tests/test_json_reader.cpp)
 target_link_libraries(test_json_reader fx_hedging)
 
-add_executable(test src/test.cpp)
-target_link_libraries(test fx_hedging)
 
-add_executable(test_timegrid src/tests/test_timegrid.cpp src/utils/TimeGrid.cpp)
+add_executable(test_timegrid src/tests/test_timegrid.cpp src/utils/GridTimeGrid.cpp)
 target_link_libraries(test_timegrid fx_hedging)
 
 add_executable(test_interest_rate src/tests/test_interest_rate_model.cpp src/financial/InterestRateModel.cpp
@@ -83,7 +83,7 @@ target_link_libraries(test_riskyasset fx_hedging)
 add_executable(test_global_model_init
         src/tests/test_global_model_init.cpp
         src/models/GlobalModel.cpp src/utils/GlobalModelBuilder.cpp src/models/Currency.cpp src/models/RiskyDynamics.cpp
-        src/utils/TimeGrid.cpp
+        src/utils/GridTimeGrid.cpp
         src/financial/RiskyAsset.cpp src/financial/InterestRateModel.cpp
 )
 target_link_libraries(test_global_model_init fx_hedging)
