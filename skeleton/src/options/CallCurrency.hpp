@@ -29,7 +29,7 @@ public:
      * @param path Path of the price of the underlying assets
      * @return X^1_T * e^{r^1 T} - K
      */
-    double payoff(const PnlMat* path) override;
+    double payoff(const PnlMat* path) const override;
 };
 
 
