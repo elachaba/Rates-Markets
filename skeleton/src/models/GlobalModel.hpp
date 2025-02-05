@@ -27,10 +27,10 @@ private:
      * @param indexToFill Index in the path matrix to populate
      * @param dt Time step for simulation
      * @param path Matrix to store the simulated path
-     * @param past Matrix containing historical data
+     * @param pastVals Last data to use
      * @param rng Random number generator
      */
-    void fill(int indexToFill, double dt, PnlMat* path, const PnlMat* past, PnlRng* rng);
+    void fill(int indexToFill, double dt, PnlMat* path, const PnlVect* pastVals, PnlRng* rng);
 
 public:
     GlobalModel(std::vector<RiskyAsset*> assets,
@@ -63,11 +63,11 @@ public:
      * @brief Simulated with shifted asset
      * @param t Current time
      * @param path Matrix to store simulated paths
-     * @param past Matrix of the historic prices
      * @param h Size of the shift
-     * @rng Random number generator
+     * @param asset Index of asset to be shifted
+     * @param shiftedPath Shifted path to be filled
      */
-    void shiftAsset(int t, PnlMat* path, const PnlMat* past, double h, PnlRng* rng);
+    void shiftAsset(int t, PnlMat* path, int asset, double h, PnlMat* shiftedPath);
 
 };
 
