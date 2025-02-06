@@ -11,7 +11,6 @@
 
 class ForeignPerfBasket : public Option {
 private:
-    std::vector<int> nbAssetsPerCurrency_;
     double strikePrice_;
 
 public:
@@ -19,11 +18,9 @@ public:
            const std::vector<InterestRateModel*>& foreignInterestRates,
            InterestRateModel* domesticInterestRate,
            ITimeGrid* monitoringTimeGrid,
-           double strikePrice,
-           std::vector<int> nbAssetsPerCurrency
+           double strikePrice
            )
         : Option(assetCurrencyMapping, foreignInterestRates_, domesticInterestRate, monitoringTimeGrid)
-        , nbAssetsPerCurrency_(std::move(nbAssetsPerCurrency))
         , strikePrice_(strikePrice) {}
 
     /**
@@ -32,6 +29,36 @@ public:
      */
     double payoff(const PnlMat* path) const override;
 
+private:
+    /**
+     * @brief Computes the average of the prices of all assets of a currency at a date
+     * @param path Matrix of prices of all underlying assets in monitoring dates
+     * @param date Time to calculate the average
+     * @param currencyId Number that represents the currency
+     * @return Average of the prices of all assets of a currency at a date
+     */
+    double computeBasketAverage(const PnlMat* path, int date, size_t currencyId) const;
+
+    /**
+    *
+    * @param path Matrix of prices of all underlying assets in monitoring dates
+    * @param currencyId Number that represents the currency
+    * @param numAssets Number of assets in the currency
+    * @return
+    */
+    double computeCurrencyPerformance(const PnlMat* path, int currencyId, int numAssets) const;
+
+    /**
+     *
+     * @return Total number of underlying  risky assets not including exchange rates
+     */
+    size_t getTotalNumberOfAssets() const;
+
+    /**
+     *
+     * @return a vector of the numbers identifying currencies
+     */
+    std::vector<int> getUniqueCurrencies() const;
 
 };
 
