@@ -16,6 +16,7 @@ private:
     std::vector<Position> positions_;
     PnlMat* marketData_;
 
+
 public:
     Portfolio(const MonteCarlo &monteCarlo,
               ITimeGrid *rebalancingTimeGrid,

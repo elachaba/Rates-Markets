@@ -15,10 +15,14 @@ void Portfolio::simulateRebalancing(int nbSamples, PnlRng *rng, double shiftSize
     // Example pseudo-code
     double t0 = rebalancingTimeGrid_->at(0);
     double price, priceStd;
-    int numberUnderlying = monteCarlo_.getNumberUnderlying();
+    int numberUnderlying = monteCarlo_.getTotalNumberOfAssets();
+    int numberRiskyAssets = monteCarlo_.getNumberRiskyAssets();
     PnlVect *delta = pnl_vect_create_from_zero(numberUnderlying);
     PnlVect *deltaStd = pnl_vect_create_from_zero(numberUnderlying);
     ITimeGrid *monitoringTimeGrid = monteCarlo_.getMonitoringGrid();
+
+    std::vector<int> assetCurrencyMapping = monteCarlo_.getAssetCurrencyMapping();
+
 
 
     // We'll loop over each date in the time grid
@@ -44,7 +48,11 @@ void Portfolio::simulateRebalancing(int nbSamples, PnlRng *rng, double shiftSize
         for (int k = 0; k < index; k++) {
             for (int j = 0; j < numberUnderlying; j++) {
                 // Copy data from marketData_ to past
-                MLET(past, k, j) = MGET(marketData_, monitoringTimeGrid->at(k), j);
+                double rateChange = 1.0;
+                if (assetCurrencyMapping.at(j)) {
+                    rateChange = MGET(marketData_, monitoringTimeGrid->at(k), numberRiskyAssets+j);
+                }
+                MLET(past, k, j) = MGET(marketData_, monitoringTimeGrid->at(k), j)*rateChange;
             }
         }
 

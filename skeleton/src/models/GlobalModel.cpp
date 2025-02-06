@@ -35,6 +35,11 @@ int GlobalModel::getTotalNumberOfAssets() const
     return riskyAssets_.size() + currencies_.size();
 }
 
+int GlobalModel::getNumberRiskyAssets() const
+{
+    return riskyAssets_.size();
+}
+
 
 void GlobalModel::simulate(int t, PnlMat* path, const PnlMat* past, PnlRng* rng)
 {

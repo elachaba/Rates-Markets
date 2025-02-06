@@ -49,9 +49,14 @@ public:
 
 
     /**
-     * @brief Return the total number of risky assets
+     * @brief Return the total number assets
      */
     int getTotalNumberOfAssets() const;
+
+    /**
+     * @brief Return the total number of risky assets
+     */
+    int getNumberRiskyAssets() const;
 
     /**
      * @brief Simulate assets' paths

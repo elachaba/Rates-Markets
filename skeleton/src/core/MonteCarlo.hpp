@@ -20,8 +20,10 @@ public:
 
     // Method to compute the price and deltas
     void priceAndDelta(int t, PnlMat* past, PnlRng* rng, double& price, double& priceStd, PnlVect* deltas, PnlVect* deltasStd);
-    [[nodiscard]] int getNumberUnderlying() const {return model.getTotalNumberOfAssets(); };
+    [[nodiscard]] int getTotalNumberOfAssets() const {return model.getTotalNumberOfAssets(); };
     [[nodiscard]] ITimeGrid* getMonitoringGrid() const {return option->getMonitoringGrid();}
+    [[nodiscard]] std::vector<int> getAssetCurrencyMapping() const { return option->getAssetCurrencyMapping(); }
+    [[nodiscard]] int getNumberRiskyAssets() const {return model.getNumberRiskyAssets(); };
 };
 
 #endif // MONTECARLO_HPP
