@@ -14,7 +14,6 @@ private:
     MonteCarlo monteCarlo_;
     ITimeGrid *rebalancingTimeGrid_;
     std::vector<Position> positions_;
-    PnlMat* marketData_;
 
 
 public:
@@ -22,11 +21,23 @@ public:
               ITimeGrid *rebalancingTimeGrid,
             PnlMat* marketData);
 
-    // Main method to run the rebalancing simulation
-    void simulateRebalancing(int nbSamples, PnlRng *rng, double shiftSize);
+    /**
+     * @brief Extracts market data for the monitoring dates up to time t
+     * @param t Current time
+     * @return Matrix containing market data up to time t
+     */
+    PnlMat* extractPastData(PnlMat* market, int dateInDays, double t) const;
+
+    /**
+     * @brief Simulates portfolio rebalancing at specified dates
+     * @param marketData Historic prices of all assets
+     * @param rng Random number generator
+     */
+    void simulateRebalancing(PnlMat* marketData, PnlRng* rng);
 
     // Accessor for the positions
     const std::vector<Position>& getPositions() const { return positions_; }
+
 
 };
 

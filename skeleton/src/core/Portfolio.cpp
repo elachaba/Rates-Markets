@@ -4,79 +4,129 @@ Portfolio::Portfolio(const MonteCarlo &monteCarlo,
                      ITimeGrid *rebalancingTimeGrid,
                      PnlMat* marketData)
     : monteCarlo_(monteCarlo),
-      rebalancingTimeGrid_(rebalancingTimeGrid),
-      marketData_(marketData)
+      rebalancingTimeGrid_(rebalancingTimeGrid)
 {
     positions_.reserve(rebalancingTimeGrid_->len());
 }
 
-void Portfolio::simulateRebalancing(int nbSamples, PnlRng *rng, double shiftSize)
+PnlMat* Portfolio::extractPastData(PnlMat* market, int dateInDays, double t) const
 {
-    // Example pseudo-code
-    double t0 = rebalancingTimeGrid_->at(0);
-    double price, priceStd;
-    int numberUnderlying = monteCarlo_.getTotalNumberOfAssets();
-    int numberRiskyAssets = monteCarlo_.getNumberRiskyAssets();
-    PnlVect *delta = pnl_vect_create_from_zero(numberUnderlying);
-    PnlVect *deltaStd = pnl_vect_create_from_zero(numberUnderlying);
-    ITimeGrid *monitoringTimeGrid = monteCarlo_.getMonitoringGrid();
-
+    ITimeGrid* monitoringGrid = monteCarlo_.getMonitoringGrid();
+    int numAssets = monteCarlo_.getTotalNumberOfAssets();
+    int numRiskyAssets = monteCarlo_.getNumberRiskyAssets();
     std::vector<int> assetCurrencyMapping = monteCarlo_.getAssetCurrencyMapping();
 
-
-
-    // We'll loop over each date in the time grid
-    for (int i = 0; i < rebalancingTimeGrid_->len(); i++)
-    {
-        int t = rebalancingTimeGrid_->at(i);
-
-        // Step 1: Determine how many rows are needed in "past"
-        int index = 0;
-        while (index < monitoringTimeGrid->len() && monitoringTimeGrid->at(index) < t) {
-            index++;
+    // Get all valid dates up to dateInDays
+    std::vector<int> validDates;
+    for(int i = 0; i < monitoringGrid->len(); i++) {
+        int date = monitoringGrid->at(i);
+        if(date <= dateInDays) {
+            validDates.push_back(date);
+        } else {
+            break;
         }
+    }
 
-        // Check if the current index points to a monitoring time exactly equal to t
-        if (index < monitoringTimeGrid->len() && monitoringTimeGrid->at(index) == t) {
-            index++; // Include this row in "past"
-        }
+    // Add dateInDays if it's not already included
+    bool isMonitoringDate = monitoringGrid->has(dateInDays);
+    if(!isMonitoringDate) {
+        validDates.push_back(dateInDays);
+    }
 
-        // Step 2: Create "past" with the exact number of rows needed
-        PnlMat *past = pnl_mat_create(index, numberUnderlying);
+    // Create matrix
+    PnlMat* past = pnl_mat_create(validDates.size(), numAssets);
 
-        // Step 3: Fill "past" with relevant data
-        for (int k = 0; k < index; k++) {
-            for (int j = 0; j < numberUnderlying; j++) {
-                // Copy data from marketData_ to past
-                double rateChange = 1.0;
-                if (assetCurrencyMapping.at(j)) {
-                    rateChange = MGET(marketData_, monitoringTimeGrid->at(k), numberRiskyAssets+j);
-                }
-                MLET(past, k, j) = MGET(marketData_, monitoringTimeGrid->at(k), j)*rateChange;
+    // Fill matrix using validDates
+    for(size_t i = 0; i < validDates.size(); i++) {
+        int date = validDates[i];
+
+        for (int j = 0; j < numRiskyAssets; j++) {
+            double value = MGET(market, date, j);
+            if (assetCurrencyMapping[j] > 0) {
+                double fxRate = MGET(market, date, numRiskyAssets + assetCurrencyMapping[j] - 1);
+                value *= fxRate;
             }
+            MLET(past, i, j) = value;
         }
 
-        // Proceed to use "past" (no need to resize!)
-        monteCarlo_.priceAndDelta(t, past, rng, price, priceStd, delta, deltaStd);
+        for (int j = numRiskyAssets; j < numAssets; j++) {
+            double fxRate = MGET(market, date, j);
+            int currentIndex = j - numRiskyAssets;
+            double foreignRate = monteCarlo_.getForeignRate(currentIndex);
+            MLET(past, i, j) = fxRate * exp(foreignRate * t);
+        }
+    }
 
+    return past;
+}
 
-        // 1. Price and delta
-        monteCarlo_.priceAndDelta(
-            t,
-            past,
-            rng,
-            price,
-            priceStd,
-            delta,
-            deltaStd
-        );
+void Portfolio::simulateRebalancing(PnlMat* marketData, PnlRng* rng)
+{
+    const int numAssets = monteCarlo_.getTotalNumberOfAssets();
+    double price = 0, priceStd = 0;
+    PnlVect* deltas = pnl_vect_create_from_zero(numAssets);
+    PnlVect* deltasStd = pnl_vect_create_from_zero(numAssets);
+    auto daysInYear = static_cast<double>(rebalancingTimeGrid_->getNumberOfDaysInYear());
 
-        // 2. Build a Position object with the results
-        Position pos = Position(t, price, priceStd, delta, deltaStd, 1.0);
+    // First position
+    double t = 0.0;
+    PnlMat* past = extractPastData(marketData, 0, 0.0);
+    monteCarlo_.priceAndDelta(t, past, rng, price, priceStd, deltas, deltasStd);
 
+    // Get initial spots for calculating risky position
+    PnlVect* spots = pnl_vect_create(numAssets);
+    pnl_mat_get_row(spots, past, past->m - 1);
 
-        // 4. Store
-        positions_.push_back(pos);
+    // Initial portfolio value equals option price
+    double portfolioValue = price;
+    // Cash value is portfolio value minus risky position
+    double riskyValue = pnl_vect_scalar_prod(deltas, spots);
+    double cashValue = portfolioValue - riskyValue;
+
+    Position position(0, price, priceStd, deltas, deltasStd, cashValue, portfolioValue);
+    positions_.push_back(position);
+
+    pnl_vect_free(&deltas);
+    pnl_vect_free(&deltasStd);
+
+    pnl_vect_free(&spots);
+    pnl_mat_free(&past);
+
+    // For subsequent dates
+    for (int dateIndex = 1; dateIndex < rebalancingTimeGrid_->len(); dateIndex++)
+    {
+        deltas = pnl_vect_create_from_zero(numAssets);
+        deltasStd = pnl_vect_create_from_zero(numAssets);
+
+        if (!rebalancingTimeGrid_->has(dateIndex))
+            continue;
+
+        t = static_cast<double>(rebalancingTimeGrid_->at(dateIndex)) / daysInYear;
+        past = extractPastData(marketData, dateIndex, t);
+
+        PnlVect* currentSpots = pnl_vect_create(numAssets);
+        pnl_mat_get_row(currentSpots, past, past->m - 1);
+
+        double dt = (rebalancingTimeGrid_->at(dateIndex) - rebalancingTimeGrid_->at(dateIndex - 1)) / daysInYear;
+
+        // Get portfolio value using previous position
+        portfolioValue = positions_.back().computeValue(currentSpots, dt, monteCarlo_.getDomesticRate());
+
+        // Calculate new position
+        monteCarlo_.priceAndDelta(t, past, rng, price, priceStd, deltas, deltasStd);
+
+        // Calculate new cash value
+        riskyValue = pnl_vect_scalar_prod(deltas, currentSpots);
+        cashValue = portfolioValue - riskyValue;
+
+        Position newPosition(dateIndex, price, priceStd, deltas, deltasStd, cashValue, portfolioValue);
+        positions_.push_back(newPosition);
+
+        pnl_vect_free(&deltas);
+        pnl_vect_free(&deltasStd);
+
+        pnl_mat_free(&past);
+        pnl_vect_free(&currentSpots);
     }
 
 }

@@ -14,17 +14,45 @@ public:
     int date_;
     double price_;
     double priceStdDev_;
-    double portfolioValue_;
+    double portfolioValue_;  // Added portfolio value
     PnlVect *deltas_;
     PnlVect *deltasStdDev_;
 
+private:
+    double cashValue_;
+
+
+public:
     Position(int date,
         double price,
         double priceStdDev,
         PnlVect *deltas,
         PnlVect *deltasStdDev,
-        double portfolioValue
-        );
+        double cashValue,
+        double portfolioValue);
+
+    Position(const Position& other);
+
+    Position& operator=(const Position& other)
+    {
+        if (this != &other) {
+            date_ = other.date_;
+            price_ = other.price_;
+            priceStdDev_ = other.priceStdDev_;
+            cashValue_ = other.cashValue_;
+            portfolioValue_ = other.portfolioValue_;
+
+            // Free existing vectors
+            if (deltas_) pnl_vect_free(&deltas_);
+            if (deltasStdDev_) pnl_vect_free(&deltasStdDev_);
+
+            // Copy new vectors
+            deltas_ = pnl_vect_copy(other.deltas_);
+            deltasStdDev_ = pnl_vect_copy(other.deltasStdDev_);
+        }
+        return *this;
+    }
+
 
     virtual ~Position();
 
@@ -41,8 +69,10 @@ public:
     /**
      * @brief Compute position value
      * @param spots Current market spots
+     * @param dt Time between the two rebalancing dates in years
+     * @param riskFreeRate Domestic risk free rate
      */
-    double computeValue(const PnlVect* spots) const;
+    double computeValue(const PnlVect* spots, double dt, double riskFreeRate) const;
 
 };
 #endif //POSITION_HPP
