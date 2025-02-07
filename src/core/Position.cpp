@@ -39,7 +39,6 @@ Position::Position(const Position& other)
 
 Position::~Position()
 {
-    std::cout << "Position destructor called" << std::endl;
     if (deltas_ != nullptr)
         pnl_vect_free(&deltas_);
 

@@ -19,7 +19,6 @@ GlobalModel::GlobalModel(std::vector<RiskyAsset*> assets,
 
 GlobalModel::~GlobalModel()
 {
-    std::cout<<"GlobalModel::~GlobalModel()"<<std::endl;
     if (!riskyAssets_.empty()) {
         for (auto* asset : riskyAssets_) {
             if (asset != nullptr) {

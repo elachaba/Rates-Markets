@@ -21,9 +21,7 @@ public:
               ITimeGrid *rebalancingTimeGrid,
             PnlMat* marketData);
 
-    ~Portfolio() {
-        std::cout << "Portfolio destructor called" << std::endl;
-    };
+    ~Portfolio() = default;
 
     /**
      * @brief Extracts market data for the monitoring dates up to time t

@@ -14,9 +14,7 @@ private:
 public:
     explicit InterestRateModel(double rate);
 
-    virtual ~InterestRateModel() {
-        std::cout << "InterestRateModel destructor called" << std::endl;
-    };
+    virtual ~InterestRateModel() = default;
 
     /**
      * calculates the discount factor between times t1 and t2.

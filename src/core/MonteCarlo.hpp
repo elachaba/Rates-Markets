@@ -21,10 +21,7 @@ public:
     // Constructor
     MonteCarlo(Option* option, const GlobalModel& model, int numberSimulations, double eps);
 
-    ~MonteCarlo()
-    {
-        std::cout << "MonteCarlo destructor called" << std::endl;
-    };
+    ~MonteCarlo() = default;
 
     // Method to compute the price and deltas
     void priceAndDelta(double t, PnlMat* past, PnlRng* rng, double& price, double& priceStd, PnlVect* deltas, PnlVect* deltasStd);
