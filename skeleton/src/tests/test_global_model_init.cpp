@@ -10,7 +10,7 @@
 #include <iostream>
 #include <fstream>
 #include "models/GlobalModel.hpp"
-#include "utils/GlobalModelBuilder.hpp"
+#include "builders/GlobalModelBuilder.hpp"
 #include "nlohmann/json.hpp"
 
 void testGlobalModel() {
