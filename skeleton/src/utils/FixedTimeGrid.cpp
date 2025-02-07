@@ -5,15 +5,18 @@
 #include "FixedTimeGrid.hpp"
 #include <stdexcept>
 
-FixedTimeGrid::FixedTimeGrid(int maturityInDays, int period)
+FixedTimeGrid::FixedTimeGrid(int maturityInDays, int period, int numberOfDaysInYear)
     : maturityInDays_(maturityInDays)
     , period_(period)
+    , numberOfDaysInYear_(numberOfDaysInYear)
 {
     if (maturityInDays_ < 0)
-        throw std::invalid_argument("maturityInDays must be >= 0");
+        throw std::invalid_argument("FixedTimeGrid: maturityInDays must be >= 0");
 
     if (period_ < 0)
-        throw std::invalid_argument("period must be >= 0");
+        throw std::invalid_argument("FixedTimeGrid: period must be >= 0");
+    if (numberOfDaysInYear_ < 0)
+        throw std::invalid_argument("FixedTimeGrid: numberOfDaysInYear must be >= 0");
 }
 
 int FixedTimeGrid::at(int index) const
@@ -39,6 +42,10 @@ bool FixedTimeGrid::has(int nDays) const
     if (nDays < 0 || nDays > maturityInDays_)
         return false;
 
-    return nDays % period_ == 0;
-}
+    if (nDays == maturityInDays_)
+        return true;
 
+    if (nDays % period_ == 0)
+        return true;
+    return false;
+}

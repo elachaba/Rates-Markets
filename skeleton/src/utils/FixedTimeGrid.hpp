@@ -15,6 +15,7 @@ class FixedTimeGrid : public ITimeGrid {
 private:
     int maturityInDays_;
     int period_;
+    int numberOfDaysInYear_;
 
 public:
     /**
@@ -22,7 +23,7 @@ public:
      * @param maturityInDays The last date of the grid.
      * @param period Time step between two date.
      */
-    explicit FixedTimeGrid(int maturityInDays, int period);
+    explicit FixedTimeGrid(int maturityInDays, int period, int numberOfDaysInYear);
 
     /**
      * @brief Returns the date at a given index.
@@ -44,6 +45,7 @@ public:
      */
     bool has(int nDays) const override;
 
+    int getNumberOfDaysInYear() const override { return numberOfDaysInYear_; };
 };
 
 

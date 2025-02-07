@@ -15,13 +15,14 @@
 class GridTimeGrid : public ITimeGrid {
 private:
     std::vector<int> dates_; ///< List of dates in the grid.
+    int numberOfDaysInYear_;
 
 public:
     /**
      * @brief Constructor using a JSON description.
      * @param dates List of dates in the time grid
      */
-    explicit GridTimeGrid(std::vector<int> dates);
+    explicit GridTimeGrid(std::vector<int> dates, int numberOfDaysInYear);
 
     /**
      * @brief Returns the date at a given index.
@@ -43,6 +44,8 @@ public:
      * @return true if the date exists, false otherwise.
      */
     bool has(int nDays) const override;
+
+    int getNumberOfDaysInYear() const override { return numberOfDaysInYear_; };
 
 };
 

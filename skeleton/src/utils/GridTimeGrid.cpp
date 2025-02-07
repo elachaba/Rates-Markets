@@ -10,11 +10,15 @@
 
 
 
-GridTimeGrid::GridTimeGrid(std::vector<int> dates) : dates_(std::move(dates)) {}
+GridTimeGrid::GridTimeGrid(std::vector<int> dates, int numberOfDaysInYear)
+    : dates_(std::move(dates))
+    , numberOfDaysInYear_(numberOfDaysInYear) {}
 
 int GridTimeGrid::at(int index) const {
+    if (index == -1)
+        return 0;
     if (index < 0 || index >= static_cast<int>(dates_.size())) {
-        throw std::out_of_range("Index is out of range.");
+        throw std::out_of_range("GridTimeGrid: Index is out of range.");
     }
     return dates_[index];
 }
