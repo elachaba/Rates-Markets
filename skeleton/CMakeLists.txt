@@ -26,6 +26,8 @@ set(SOURCE_FILES
         src/core/MonteCarlo.cpp
         src/core/Position.hpp
         src/core/Position.cpp
+        src/core/Portfolio.cpp
+        src/core/Portfolio.hpp
         src/models/GlobalModel.cpp
         src/models/GlobalModel.hpp
         src/models/RiskyDynamics.cpp
@@ -39,8 +41,8 @@ set(SOURCE_FILES
         src/financial/InterestRateModel.hpp
         src/utils/GridTimeGrid.cpp
         src/utils/GridTimeGrid.hpp
-        src/utils/GlobalModelBuilder.cpp
-        src/utils/GlobalModelBuilder.hpp
+        src/builders/GlobalModelBuilder.cpp
+        src/builders/GlobalModelBuilder.hpp
         src/utils/ITimeGrid.hpp
         src/utils/FixedTimeGrid.cpp
         src/utils/FixedTimeGrid.hpp
@@ -54,6 +56,16 @@ set(SOURCE_FILES
         src/options/ForeignAsianOption.hpp
         src/options/ForeignPerfBasket.cpp
         src/options/ForeignPerfBasket.hpp
+        src/options/Option.cpp
+        src/builders/OptionBuilder.cpp
+        src/builders/OptionBuilder.hpp
+        src/utils/MarketParameters.cpp
+        src/utils/MarketParameters.hpp
+        src/utils/FinancialInstrumentBuilder.cpp
+        src/utils/FinancialInstrumentBuilder.hpp
+        src/builders/TimeGridBuilder.cpp
+        src/builders/TimeGridBuilder.hpp
+        src/hedging_portfolio.cpp
 )
 
 # Create library
@@ -92,8 +104,22 @@ target_link_libraries(test_riskyasset fx_hedging)
 
 add_executable(test_global_model_init
         src/tests/test_global_model_init.cpp
-        src/models/GlobalModel.cpp src/utils/GlobalModelBuilder.cpp src/models/Currency.cpp src/models/RiskyDynamics.cpp
+        src/models/GlobalModel.cpp src/builders/GlobalModelBuilder.cpp src/models/Currency.cpp src/models/RiskyDynamics.cpp
         src/utils/GridTimeGrid.cpp
         src/financial/RiskyAsset.cpp src/financial/InterestRateModel.cpp
 )
 target_link_libraries(test_global_model_init fx_hedging)
+
+add_executable(hedging_portfolio
+        src/hedging_portfolio.cpp
+        src/utils/json_reader.cpp src/utils/GridTimeGrid.cpp src/utils/FixedTimeGrid.cpp
+        src/utils/MarketParameters.cpp src/utils/FinancialInstrumentBuilder.cpp
+        src/core/MonteCarlo.cpp src/core/Position.cpp src/core/Portfolio.cpp
+        src/models/GlobalModel.cpp src/models/RiskyDynamics.cpp src/models/Currency.cpp
+        src/financial/RiskyAsset.cpp src/financial/InterestRateModel.cpp
+        src/builders/GlobalModelBuilder.cpp src/builders/OptionBuilder.cpp src/builders/TimeGridBuilder.cpp
+        src/options/CallQuanto.cpp src/options/CallCurrency.cpp src/options/QuantoExchange.cpp
+        src/options/ForeignAsianOption.cpp src/options/ForeignPerfBasket.cpp src/options/Option.cpp
+
+)
+target_link_libraries(hedging_portfolio fx_hedging)
