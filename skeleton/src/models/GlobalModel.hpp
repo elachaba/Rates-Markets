@@ -45,7 +45,7 @@ public:
     [[nodiscard]] const std::vector<Currency*>& getCurrencies() const { return currencies_; }
     [[nodiscard]] const ITimeGrid* getTimeGrid() const { return monitoringTimeGrid_; }
     [[nodiscard]] const InterestRateModel* getInterestRateModel() const { return domesticInterestRate_; }
-    [[nodiscard]] int getMaturity() const {return monitoringTimeGrid_->at(monitoringTimeGrid_->len()-1); }
+    [[nodiscard]] int getMaturity() const { return monitoringTimeGrid_->at(monitoringTimeGrid_->len()-1); }
 
 
     /**
@@ -65,7 +65,7 @@ public:
      * @param past Matrix of historic prices
      * @param rng Random number generator
      */
-    void simulate(int t, PnlMat* path, const PnlMat* past, PnlRng* rng);
+    void simulate(double t, PnlMat* path, const PnlMat* past, PnlRng* rng);
 
     /**
      * @brief Simulated with shifted asset
@@ -75,10 +75,8 @@ public:
      * @param asset Index of asset to be shifted
      * @param shiftedPath Shifted path to be filled
      */
-    void shiftAsset(int t, PnlMat* path, int asset, double h, PnlMat* shiftedPath);
-
-
-
+    void shiftAsset(double t, PnlMat* path, int asset, double h, PnlMat* shiftedPath);
+    double getForeignRate(int currency_index) const { return currencies_[currency_index]->getForeignRate(); };
 };
 
 #endif //GLOBALMODEL_HPP

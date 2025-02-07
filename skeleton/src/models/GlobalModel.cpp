@@ -19,15 +19,33 @@ GlobalModel::GlobalModel(std::vector<RiskyAsset*> assets,
 
 GlobalModel::~GlobalModel()
 {
-    for (auto asset : riskyAssets_)
-        delete asset;
+    if (!riskyAssets_.empty()) {
+        for (auto* asset : riskyAssets_) {
+            if (asset != nullptr) {
+                delete asset;
+            }
+        }
+        riskyAssets_.clear();
+    }
 
-    for (auto currency : currencies_)
-        delete currency;
+    if (!currencies_.empty()) {
+        for (auto* currency : currencies_) {
+            if (currency != nullptr) {
+                delete currency;
+            }
+        }
+        currencies_.clear();
+    }
 
-    delete monitoringTimeGrid_;
-    delete domesticInterestRate_;
+    if (monitoringTimeGrid_ != nullptr) {
+        delete monitoringTimeGrid_;
+        monitoringTimeGrid_ = nullptr;
+    }
 
+    if (domesticInterestRate_ != nullptr) {
+        delete domesticInterestRate_;
+        domesticInterestRate_ = nullptr;
+    }
 }
 
 int GlobalModel::getTotalNumberOfAssets() const
@@ -41,64 +59,86 @@ int GlobalModel::getNumberRiskyAssets() const
 }
 
 
-void GlobalModel::simulate(int t, PnlMat* path, const PnlMat* past, PnlRng* rng)
+void GlobalModel::simulate(double t, PnlMat* path, const PnlMat* past, PnlRng* rng)
 {
+    int nbTimeSteps = monitoringTimeGrid_->len();
+    int totalNumberOfAssets = getTotalNumberOfAssets();
+    int daysInYear = monitoringTimeGrid_->getNumberOfDaysInYear();
 
-    int indexToFill = 0;
-    int monitoringLength = monitoringTimeGrid_->len();
-    int nbUnderlying = getTotalNumberOfAssets();
-    while (indexToFill < monitoringLength && monitoringTimeGrid_->at(indexToFill) <= t) {
-        for (int j = 0; j < nbUnderlying; j++) {
-            MLET(path, indexToFill, j) = MGET(past, indexToFill, j);
+    int tDays = static_cast<int> (t * daysInYear);
+
+    int currentIndex = 0;
+    while (currentIndex < nbTimeSteps && monitoringTimeGrid_->at(currentIndex) <= tDays)
+    {
+        for (int j = 0; j < totalNumberOfAssets; j++)
+            MLET(path, currentIndex, j) = MGET(past, currentIndex, j);
+        currentIndex++;
+    }
+
+    // if we have more dates to simulate
+    if (currentIndex < nbTimeSteps)
+    {
+        // Get Last known values from past
+        PnlVect* prevValues = pnl_vect_create(totalNumberOfAssets);
+        pnl_mat_get_row(prevValues, past, past->m - 1);
+
+        double dt;
+        if (t > 0)
+            dt = (monitoringTimeGrid_->at(currentIndex) - tDays) / static_cast<double>(daysInYear);
+        else
+            dt = monitoringTimeGrid_->at(currentIndex) / static_cast<double>(daysInYear);
+        fill(currentIndex, dt, path, prevValues, rng);
+        currentIndex++;
+        pnl_vect_free(&prevValues);
+
+        for (int i = currentIndex; i < nbTimeSteps; i++)
+        {
+            dt = monitoringTimeGrid_->at(i) - monitoringTimeGrid_->at(i - 1);
+            dt /= static_cast<double>(daysInYear);
+            prevValues = pnl_vect_create_from_zero(totalNumberOfAssets);
+            pnl_mat_get_row(prevValues, path, i - 1);
+            fill(i, dt, path, prevValues, rng);
+            pnl_vect_free(&prevValues);
         }
-        indexToFill++;
     }
-
-    PnlVect* pastVals = pnl_vect_create(nbUnderlying);
-
-    if (indexToFill != past->m) {   //in case t isn't a monitoring date
-        int dt = monitoringTimeGrid_->at(indexToFill) - t;
-        pnl_mat_get_row(pastVals, past, past->m); // the values at t
-        fill(indexToFill, dt, path, pastVals, rng);
-        indexToFill ++;
-    }
-
-    for (int i = indexToFill; i < monitoringLength; i++) {
-        int dt = monitoringTimeGrid_->at(i) - monitoringTimeGrid_->at(i-1);
-        pnl_mat_get_row(pastVals, path, i-1); // the values at t_{i-1}
-        fill(indexToFill, dt, path, pastVals, rng);
-    }
-
-    pnl_vect_free(&pastVals);
-
 
 }
 
-void GlobalModel::shiftAsset(int t, PnlMat* path, int asset, double h, PnlMat* shiftedPath)
+void GlobalModel::fill(int indexToFill, double dt, PnlMat* path, const PnlVect* pastVals, PnlRng* rng)
+{
+    PnlVect* gaussianVect = pnl_vect_create(getTotalNumberOfAssets());
+    pnl_vect_rng_normal(gaussianVect, gaussianVect->size, rng);
+
+    for (size_t i = 0; i < riskyAssets_.size(); i++)
+    {
+        double newValue = riskyAssets_[i]->sampleNextValue(GET(pastVals, i), dt, gaussianVect);
+        MLET(path, indexToFill, i) = newValue;
+    }
+
+    for (size_t i = 0; i < currencies_.size(); i++)
+    {
+        double newValue = currencies_[i]->sampleNextValue(
+            GET(pastVals, riskyAssets_.size() + i),
+            dt,
+            gaussianVect);
+        MLET(path, indexToFill, riskyAssets_.size() + i) = newValue;
+    }
+
+    pnl_vect_free(&gaussianVect);
+}
+
+void GlobalModel::shiftAsset(double t, PnlMat* path, int asset, double h, PnlMat* shiftedPath)
 {
     int nbTimeSteps = monitoringTimeGrid_->len();
+    auto daysInYear = (double) monitoringTimeGrid_->getNumberOfDaysInYear();
+    int tDays = static_cast<int> (t * daysInYear);
+
     int idx = 0;
-    while (idx < nbTimeSteps - 1 && monitoringTimeGrid_->at(idx) < t) {
+    while (idx < nbTimeSteps - 1 && monitoringTimeGrid_->at(idx) < tDays) {
         idx++;
     }
 
     for (int i = idx; i < shiftedPath->m; i++)
         MLET(shiftedPath, i, asset) = MGET(path, i, asset) * (1 + h);
 
-}
-
-
-
-void GlobalModel::fill(int indexToFill, double dt, PnlMat* path, const PnlVect* pastVals, PnlRng* rng) {
-    for (int i = 0; i < getTotalNumberOfAssets(); i++) {
-        double newValue;
-        PnlVect* gaussianVect = pnl_vect_create(getTotalNumberOfAssets());
-        pnl_vect_rng_normal(gaussianVect, gaussianVect->size, rng);
-        if (i < riskyAssets_.size()) {
-            newValue = riskyAssets_.at(i)->sampleNextValue(GET(pastVals, i), dt, gaussianVect);
-        } else {
-            newValue = currencies_.at(i-riskyAssets_.size())->sampleNextValue(GET(pastVals, i), dt, gaussianVect);
-        }
-        MLET(path, indexToFill, i) = newValue;
-    }
 }
