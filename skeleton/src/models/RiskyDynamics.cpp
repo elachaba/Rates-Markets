@@ -11,13 +11,15 @@
 RiskyDynamics::RiskyDynamics(double drift, PnlVect* volatilityVector) : drift_(drift)
 {
     if (volatilityVector == nullptr)
-        throw std::runtime_error("Volatility vector cannot be null");
+        throw std::runtime_error("RiskyDynamics: Volatility vector cannot be null");
 
-    volatilityVector_ = pnl_vect_copy(volatilityVector);
+    volatilityVector_ = pnl_vect_create(volatilityVector->size);
+    pnl_vect_clone(volatilityVector_, volatilityVector);
 }
 
 RiskyDynamics::~RiskyDynamics()
 {
+    if ( volatilityVector_)
     pnl_vect_free(&volatilityVector_);
 }
 
