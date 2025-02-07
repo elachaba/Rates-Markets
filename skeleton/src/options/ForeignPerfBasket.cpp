@@ -42,11 +42,11 @@ double ForeignPerfBasket::computeCurrencyPerformance(const PnlMat* path, int cur
 {
     int t1 = 0, t2 = 1;
 
-    double fxT1 = MGET(path, t1, numAssets + currencyId);
-    double fxT2 = MGET(path, t2, numAssets + currencyId);
+    double fxT1 = MGET(path, t1, numAssets + currencyId - 1);
+    double fxT2 = MGET(path, t2, numAssets + currencyId - 1);
 
     double sumT1 = 0.0, sumT2 = 0.0;
-    int cout = 0;
+    int count = 0;
 
     for (size_t i = 0; i < assetCurrencyMapping_.size(); i++)
     {
@@ -54,11 +54,11 @@ double ForeignPerfBasket::computeCurrencyPerformance(const PnlMat* path, int cur
         {
             sumT1 += MGET(path, t1, i) / fxT1;
             sumT2 += MGET(path, t2, i) / fxT2;
-            cout++;
+            count++;
         }
     }
 
-    return cout > 0 ? sumT1 / sumT2 : 0.0;
+    return count > 0 ? sumT2 / sumT1 : 0.0;
 }
 
 double ForeignPerfBasket::computeBasketAverage(const PnlMat* path, int date, size_t currencyId) const

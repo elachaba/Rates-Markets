@@ -20,7 +20,7 @@ public:
            ITimeGrid* monitoringTimeGrid,
            double strikePrice
            )
-        : Option(assetCurrencyMapping, foreignInterestRates_, domesticInterestRate, monitoringTimeGrid)
+        : Option(assetCurrencyMapping, foreignInterestRates, domesticInterestRate, monitoringTimeGrid)
         , strikePrice_(strikePrice) {}
 
     /**

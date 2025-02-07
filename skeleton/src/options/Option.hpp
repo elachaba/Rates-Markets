@@ -33,11 +33,8 @@ public:
            InterestRateModel* domesticInterestRate,
            ITimeGrid* monitoringTimeGrid);
 
-    /**
-     * @brief Virtual destructor.
-     * Note: We don't delete pointers as they are owned by GlobalModel
-     */
-    virtual ~Option() = default;
+
+    virtual ~Option();
 
     /**
      * @brief Pure virtual method to calculate the option's payoff.
